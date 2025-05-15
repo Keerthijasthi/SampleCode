@@ -9,6 +9,7 @@ public class SampleApplication {
         System.out.println(isValid("HOODY"));
         System.out.println(isValid("ROWDY"));
     }
+
     public static boolean isValid(String input) {
         String allowed = "HOWDY";
         Set<Character> seen = new HashSet<>();
