@@ -1,30 +1,40 @@
+import java.util.Scanner;
+
 public class WelcomeStudent {
-    enum Subject{
+    enum Subject {
         MATH,
         SCIENCE,
         ENGLISH
     }
+
     public static void main(String[] args) {
-        Subject subject = Subject.MATH;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter a subject name (MATH, SCIENCE, ENGLISH) or a number (1, 2, 3):");
+        String input = scanner.nextLine().toUpperCase();
         int id = (int)(Math.random() * 10);
-        switch(subject){
-            case MATH:
+        switch (input) {
+            case "MATH":
+            case "1":
                 System.out.println("Welcome to Math class");
                 break;
-                case SCIENCE:
-                    System.out.println("Welcome to Science class");
-                    break;
-                    case ENGLISH:
-                        System.out.println("Welcome to English class");
-                        break;
-                        default:
-                            System.out.println("Invalid subject");
-                            break;
+            case "SCIENCE":
+            case "2":
+                System.out.println("Welcome to Science class");
+                break;
+            case "ENGLISH":
+            case "3":
+                System.out.println("Welcome to English class");
+                break;
+            default:
+                System.out.println("Invalid subject");
+                return; // Exit if invalid input
         }
+
         StringBuilder welcomeMessage = new StringBuilder();
         welcomeMessage.append("Welcome, Student!\n");
-        welcomeMessage.append("You have selected: ").append(subject).append("\n");
+        welcomeMessage.append("You have selected: ").append(input).append("\n");
         welcomeMessage.append("Your ID:").append(id).append("\n");
         System.out.println(welcomeMessage.toString());
+        scanner.close();
     }
 }
