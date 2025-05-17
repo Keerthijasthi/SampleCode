@@ -9,8 +9,9 @@ public class ReverseArray {
         while(loopFlag) {
             System.out.print("Enter elements separated by space: ");
             String line = scanner.nextLine();
-            String[] arr = line.trim().split("\\s+");
+            String[] arr = line.trim().split(" ");
             System.out.println("Array in reverse order:");
+            // What is the time frame for running these lines of code from lines 15 to 17
             for (int i = arr.length - 1; i >= 0; i--) {
                 System.out.print(arr[i] + " ");
             }
