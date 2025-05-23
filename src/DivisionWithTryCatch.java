@@ -13,7 +13,7 @@ public class DivisionWithTryCatch {
         int den = sc.nextInt();
 
         try {
-            int result = num / den;
+            double result =  (double)num / den;
             System.out.println("Result = " + result);
         } catch (ArithmeticException e) {
             System.out.println("Error: Cannot divide by zero.");
