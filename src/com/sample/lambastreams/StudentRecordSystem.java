@@ -1,13 +1,15 @@
 package com.sample.lambastreams;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
-import lombok.AllArgsConstructor;
+import com.google.common.collect.Multimap;
+import com.google.common.base.Optional;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,6 @@ import java.util.Scanner;
 @Setter
 @ToString
 @Builder
-
 class StudentRecord {
     private int id;
     private String name;
@@ -25,55 +26,86 @@ class StudentRecord {
 
 public class StudentRecordSystem {
     private final List<StudentRecord> studentList = new ArrayList<>();
+    private final Multimap<String, StudentRecord> nameMap = ArrayListMultimap.create(); // ✅ Guava Multimap
     private final Scanner scanner = new Scanner(System.in);
 
     public void addStudent() {
-        try {
-            System.out.print("Enter Student ID: ");
-            int id = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter Student ID: ");
+        String idInput = scanner.nextLine();
 
-            for (StudentRecord s : studentList) {
-                if (s.getId() == id) {
-                    System.out.println("Error: Student ID already exists.\n");
-                    return;
-                }
-            }
+        if (!NumberUtils.isCreatable(idInput)) {
+            System.out.println("Invalid input. ID must be a number.\n");
+            return;
+        }
+        int id = Integer.parseInt(idInput);
 
-            System.out.print("Enter Student Name: ");
-            String name = scanner.nextLine();
-
-            if (StringUtils.isBlank(name)) {
-                System.out.println("Error: Student name cannot be empty.\n");
+        for (StudentRecord s : studentList) {
+            if (s.getId() == id) {
+                System.out.println("Error: Student ID already exists.\n");
                 return;
             }
-
-            StudentRecord student = StudentRecord.builder()
-                    .id(id)
-                    .name(name)
-                    .build();
-
-            studentList.add(student);
-            System.out.println("Student added successfully!\n");
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. ID must be a number.\n");
         }
+
+        System.out.print("Enter Student Name: ");
+        String name = scanner.nextLine();
+
+        if (StringUtils.isBlank(name)) {
+            System.out.println("Error: Student name cannot be empty.\n");
+            return;
+        }
+
+        StudentRecord student = StudentRecord.builder()
+                .id(id)
+                .name(name)
+                .build();
+
+        studentList.add(student);
+        nameMap.put(name.toLowerCase(), student); // ✅ Added to multimap
+        System.out.println("Student added successfully!\n");
     }
 
     public void searchStudent() {
-        try {
-            System.out.print("Enter Student ID to search: ");
-            int id = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter Student ID to search: ");
+        String input = scanner.nextLine();
 
-            for (StudentRecord s : studentList) {
-                if (s.getId() == id) {
-                    System.out.println("Student Found: " + s + "\n");
-                    return;
-                }
-            }
-
-            System.out.println("Student not found.\n");
-        } catch (NumberFormatException e) {
+        if (!NumberUtils.isCreatable(input)) {
             System.out.println("Invalid input. ID must be a number.\n");
+            return;
+        }
+
+        int id = Integer.parseInt(input);
+
+        Optional<StudentRecord> result = Optional.absent();
+        for (StudentRecord s : studentList) {
+            if (s.getId() == id) {
+                result = Optional.of(s); // ✅ Guava Optional
+                break;
+            }
+        }
+
+        if (result.isPresent()) {
+            System.out.println("Student Found: " + result.get() + "\n");
+        } else {
+            System.out.println("Student not found.\n");
+        }
+    }
+
+    public void searchByName() {
+        System.out.print("Enter name to search: ");
+        String name = scanner.nextLine().toLowerCase();
+
+        if (StringUtils.isBlank(name)) {
+            System.out.println("Error: Name cannot be blank.\n");
+            return;
+        }
+
+        var records = nameMap.get(name);
+        if (records.isEmpty()) {
+            System.out.println("No student records found with name: " + name + "\n");
+        } else {
+            System.out.println("Students with name '" + name + "':");
+            records.forEach(System.out::println);
+            System.out.println();
         }
     }
 
@@ -94,25 +126,27 @@ public class StudentRecordSystem {
             System.out.println("===== Student Record System =====");
             System.out.println("1. Add Student");
             System.out.println("2. Search Student by ID");
-            System.out.println("3. Display All Students");
-            System.out.println("4. Exit");
+            System.out.println("3. Search Students by Name");
+            System.out.println("4. Display All Students");
+            System.out.println("5. Exit");
             System.out.print("Enter your choice: ");
 
-            try {
-                choice = Integer.parseInt(scanner.nextLine());
-
-                switch (choice) {
-                    case 1 -> addStudent();
-                    case 2 -> searchStudent();
-                    case 3 -> displayAllStudents();
-                    case 4 -> System.out.println("Exiting... Goodbye!");
-                    default -> System.out.println("Invalid choice. Please try again.\n");
-                }
-            } catch (NumberFormatException e) {
+            String choiceInput = scanner.nextLine();
+            if (!NumberUtils.isCreatable(choiceInput)) {
                 System.out.println("Please enter a valid number.\n");
-                choice = 0;
+                continue;
             }
-        } while (choice != 4);
+
+            choice = Integer.parseInt(choiceInput);
+            switch (choice) {
+                case 1 -> addStudent();
+                case 2 -> searchStudent();
+                case 3 -> searchByName(); // ✅ Added new option
+                case 4 -> displayAllStudents();
+                case 5 -> System.out.println("Exiting... Goodbye!");
+                default -> System.out.println("Invalid choice. Please try again.\n");
+            }
+        } while (choice != 5);
     }
 
     public static void main(String[] args) {
