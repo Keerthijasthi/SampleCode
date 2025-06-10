@@ -13,6 +13,11 @@ public class CharacterCount {
         String input = scanner.nextLine();
         // Count character occurrences
         Map<Character, Integer> charCount = countCharacters(input);
+
+        int wordCount = countWords(input);
+
+        // Print word count
+        System.out.println("\nTotal number of words: " + wordCount);
         // Print the character counts
         System.out.println("Character counts:");
         for (Map.Entry<Character, Integer> entry : charCount.entrySet()) {
@@ -25,8 +30,19 @@ public class CharacterCount {
     public static Map<Character, Integer> countCharacters(String str) {
         Map<Character, Integer> charCountMap = new HashMap<>();
         for (char c : str.toCharArray()) {
-            charCountMap.put(c, charCountMap.getOrDefault(c, 0) + 1);
+            charCountMap.put(c, charCountMap.
+                    getOrDefault(c, 0) + 1);
         }
         return charCountMap;
+    }
+
+    // Method to count words in a string
+    public static int countWords(String str) {
+        if (str == null || str.trim().isEmpty()) {
+            return 0;
+        }
+        // Split by one or more whitespace characters
+        String[] words = str.trim().split("\\s+");
+        return words.length;
     }
 }

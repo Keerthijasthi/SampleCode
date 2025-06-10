@@ -3,7 +3,6 @@ package com.sample.student;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-// Renamed class from StudentInfo to com.sample.student.StudentRecord
 class StudentRecord {
     private final int id;
     private final String name;
